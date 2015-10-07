@@ -1,0 +1,57 @@
+<div class="container">
+
+  <div>
+    <header/>
+  </div>
+  
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<form class="form-horizontal">
+				<div class="form-group  reset-bottom-margin">
+					<label for="inputNumber" class="col-sm-3 control-label">Choose number of stories to load</label>
+					<div class="col-sm-1">
+						<input type="number" class="form-control" min="5" max="50"
+							id="inputNumber" ng-model="main.storyAmount">
+					</div>
+					<div class="col-sm-2">
+						<button class="btn btn-primary" ng-class="{'disabled': main.loading}" ng-click="main.loadStories()">Get more stories</button>
+					</div>
+					<label for="filter" class="col-sm-1 control-label">Filter by:</label>
+					<div class="col-sm-5">
+						<div id="filter" class="btn-group btn-group-justified" role="group" aria-label="...">
+							<div class="btn-group">
+						  	<button type="button" class="btn btn-default" ng-class="{'active': main.filterSetting == 'score'}" ng-click="main.setFilter('score')">Score</button>
+						  </div>
+						  <div class="btn-group">
+						  	<button type="button" class="btn btn-default" ng-class="{'active': main.filterSetting == 'title'}" ng-click="main.setFilter('title')">Title</button>
+						  </div>
+						  <div class="btn-group">
+						  	<button type="button" class="btn btn-default" ng-class="{'active': main.filterSetting == '-by.karma'}" ng-click="main.setFilter('-by.karma')">Author karma</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-md-12" ng-if="main.loading">
+			<div class="alert alert-info" role="alert">Loading ...</div>
+		</div>
+		<div class="col-md-6" ng-repeat="story in main.displayStories | objectToArray | orderBy:main.filterSetting">
+			<div class="panel panel-default">
+				<div class="panel-heading text-crop">{{story.title}}</div>
+				<div class="panel-body panel-body-height-md">
+					<a class="display-block text-crop" ng-if="story.url" href="{{story.url}}">{{story.url}}</a>
+					<div class="text-danger" ng-if="!story.url">Link missing</div>
+					<div>Score: <strong>{{story.score}}</strong></div>
+					<div>Timestamp: <strong>{{story.time * 1000 | date:'yyyy-MM-dd'}}</strong></div>
+					<div>Author: <strong>{{story.by.id}}</strong></div>
+					<div>Author karma: <strong>{{story.by.karma}}</strong></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
