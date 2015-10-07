@@ -1,6 +1,10 @@
 (function() {
   'use strict';
 
+  /**
+   * Service that handles getting data from Server.
+   */
+  
   angular
     .module('bulletinBoard')
     .service('hackerNews', hackerNews);
@@ -15,18 +19,25 @@
   	};
   	
   	return service;
-		  
+		
+  	/**
+  	 * Function that calls "/topstories". 
+  	 * Base url and suffix is set globally elsewhere. 
+  	 */
 		function getTopStories() {
 			var promise = Restangular.all('topstories').getList();
 			
 			return promise.then(function(response){
 				return response.plain();
 			}, function() {
-				// Add toaster message here
 				return 'error';
 			});
 		}
 		
+  	/**
+  	 * Function that calls "/item/<id>" 
+  	 * Base url and suffix is set globally elsewhere.
+  	 */
 		function getStoryInfo(id) {
 			var promise = Restangular.one('item', id).get();
 			
@@ -37,6 +48,10 @@
 			});
 		}
 		
+  	/**
+  	 * Function that calls "/user/<username>".
+  	 * Base url and suffix is set globally elsewhere.
+  	 */
 		function getAuthorInfo(username) {
 			var promise = Restangular.one('user', username).get();
 			
@@ -47,5 +62,4 @@
 			});
 		}
   }
-
 })();

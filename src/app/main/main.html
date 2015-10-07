@@ -1,7 +1,7 @@
 <div class="container">
 
   <div>
-    <header/>
+    <bulletin-header/>
   </div>
   
 	<div class="panel panel-default">
@@ -38,6 +38,9 @@
 	<div class="row">
 		<div class="col-md-12" ng-if="main.loading">
 			<div class="alert alert-info" role="alert">Loading ...</div>
+		</div>
+		<div class="col-md-12" ng-if="main.error">
+			<div class="alert alert-danger" role="alert">Failed to get list of stories. Please try again.</div>
 		</div>
 		<div class="col-md-6" ng-repeat="story in main.displayStories | objectToArray | orderBy:main.filterSetting">
 			<div class="panel panel-default">

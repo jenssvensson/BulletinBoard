@@ -9,27 +9,49 @@
   function MainController($timeout, hackerNews, toastr, $q) {
     var vm = this;
 
+    /**
+     * Exposing functions for the view
+     */
     vm.loadStories = loadStories;
     vm.setFilter = setFilter;
+    
+    /**
+     * Data holders and flags
+     */
     vm.displayStories = null;
     vm.storyAmount = 10;
     vm.loading = false;
     vm.filterSetting = 'score';
+    vm.error = true;
     
+    /**
+     * Load all the stories on init.
+     */
     loadStories();
     
+    /**
+     * Function that gets top stories list from API. 
+     */
     function loadStories() {
-    	// Add loading and things
+    	
+    	vm.error = false;
     	vm.loading = true;
+    	vm.filterSetting = 'score';
     	vm.displayStories = null;
+    	
 			hackerNews.getTopStories().then(function (data){
 				var stories = getRandomStories(vm.storyAmount, data);
 				getStoriesInfo(stories);
 			}, function () {
+	    	vm.error = true;
+	    	vm.loading = false;
 				toastr.error('Failed to load top stories list from API', 'Error');
 			});
 		}
     
+    /**
+     * Function that get specific info about a number of stories
+     */
     function getStoriesInfo(stories){
     	
     	var apiCalls = [];
@@ -40,17 +62,23 @@
     	
     	$q.all(apiCalls).then(function (results){
     		for (var int = 0; int < results.length; int++) {
+    			
     			if (results[int] === 'error') {
+    	    	vm.error = true;
+    	    	vm.loading = false;
     				toastr.error('Failed to load story info from API' , 'Error');
     				return;
 					}
 					stories[results[int].id] = results[int];
 				}
+    		
     		getAuthorsInfo(stories);
     	});
-    	
     }
     
+    /**
+     * Function that gets author info for the stories.
+     */
     function getAuthorsInfo(stories){
     	var apiCalls = [];
     	
@@ -63,66 +91,44 @@
     		var keys = Object.keys(stories);
       	
     		for (var int = 0; int < results.length; int++) {
-    			// Intercept error and send message to user
+    			
     			if (results[int] === 'error') {
+    	    	vm.error = true;
+    	    	vm.loading = false;
     				toastr.error('Failed to author info from API' , 'Error');
     				return;
 					}
 					stories[keys[int]].by = results[int];
 				}
     		
-    		// Add the data to model
     		vm.displayStories = stories;
     		vm.loading = false;
     	});
     	
     }
     
+    /**
+     * Pick a number of random stories from collection.
+     */
 		function getRandomStories(count, stories){
 			
 			var randomStories = {};
-			
 			var int = 0;
+			
 			while (int < count) {
 				var story = stories[Math.floor(Math.random() * stories.length)];
+				
 				if (randomStories[story] === undefined) {
-					randomStories[story] = {}; //place holder with blank data
+					randomStories[story] = {};
 					int++;
 				}
 			}
+			
 			return randomStories;
 		}
 		
 		function setFilter(filter) {
 			vm.filterSetting = filter;
 		}
-    
-    /* vm.awesomeThings = [];
-    vm.classAnimation = '';
-    vm.creationDate = 1443715949751;
-    vm.showToastr = showToastr;
-
-    activate();
-
-    function activate() {
-      getWebDevTec();
-      $timeout(function() {
-        vm.classAnimation = 'rubberBand';
-      }, 4000);
-    }
-
-    function showToastr() {
-      toastr.info('Fork <a href="https://github.com/Swiip/generator-gulp-angular" target="_blank"><b>generator-gulp-angular</b></a>');
-      vm.classAnimation = '';
-    }
-
-    function getWebDevTec() {
-      vm.awesomeThings = webDevTec.getTec();
-
-      angular.forEach(vm.awesomeThings, function(awesomeThing) {
-        awesomeThing.rank = Math.random();
-      });
-    }
-    */
   }
 })();
